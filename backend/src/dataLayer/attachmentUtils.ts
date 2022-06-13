@@ -11,7 +11,12 @@ export class AttachmentUtils {
     constructor(
         private bucket = process.env.ATTACHMENT_S3_BUCKET
     ) { }
+
     async getS3Url(imageId: string): Promise<string> {
+        return `https://${this.bucket}.s3.amazonaws.com/${imageId}`
+    }
+
+    async getS3SignedUrl(imageId: string): Promise<string> {
         let url = s3.getSignedUrl('putObject', {
             Bucket: this.bucket,
             Key: imageId,

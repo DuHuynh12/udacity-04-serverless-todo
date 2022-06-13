@@ -1,5 +1,5 @@
-import { TodosAccess } from './todosAcess'
-import { AttachmentUtils } from './attachmentUtils';
+import { TodosAccess } from '../dataLayer/todosAcess'
+import { AttachmentUtils } from '../dataLayer/attachmentUtils';
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
@@ -54,9 +54,18 @@ export async function updateTodo(userId: string, todoId: string, updateTodo: Upd
 
 export async function createAttachmentPresignedUrl(todoId: string, attachmentId: string) {
   logger.info(`Create s3 url for todo ${todoId} with id ${attachmentId}`, { todoId, attachmentId })
-  let url = await dataUtils.getS3Url(attachmentId)
+  let url = await dataUtils.getS3SignedUrl(attachmentId)
   logger.info(`Created url ${url}`, { url })
   return url
+}
+
+
+export async function updateS3Url(userId: string, todoId: string, attachmentId: string) {
+  logger.info(`Get s3 url for image: ${attachmentId}`, { attachmentId })
+  let s3Url = await dataUtils.getS3Url(attachmentId)
+
+  logger.info(`Update s3 url for todo: ${todoId} = ${s3Url}`, { todoId, s3Url })
+  await todoAccess.updateS3Url(userId, todoId, s3Url)
 }
 
 

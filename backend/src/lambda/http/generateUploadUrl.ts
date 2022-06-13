@@ -4,12 +4,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
 
-import { createAttachmentPresignedUrl } from '../../helpers/todos'
-import { TodosAccess} from '../../helpers/todosAcess'
+import { createAttachmentPresignedUrl, updateS3Url } from '../../businessLogic/todos'
 import { getUserId } from '../utils'
 import * as uuid from 'uuid'
 
-const todoAccess= new TodosAccess()
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -18,7 +16,7 @@ export const handler = middy(
     const userId = getUserId(event)
     const attachmentId = uuid.v4()
     const uploadUrl = await createAttachmentPresignedUrl(todoId, attachmentId)
-    await todoAccess.updateS3Url(userId, todoId, uploadUrl)
+    await updateS3Url(userId, todoId, attachmentId)
 
     return {
       statusCode: 200,
